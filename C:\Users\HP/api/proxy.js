@@ -1,14 +1,18 @@
 export default async function handler(req, res) {
-  const path = req.url.replace('/api/proxy', '');
-  const targetUrl = 'https://api.kie.ai' + path;
+  const targetUrl = 'https://api.kie.ai' + req.url;
   
+  let body = undefined;
+  if (req.method !== 'GET') {
+    body = JSON.stringify(req.body);
+  }
+
   const response = await fetch(targetUrl, {
     method: req.method,
     headers: {
-      'Authorization': req.headers.authorization || '',
+      'Authorization': req.headers['authorization'] || '',
       'Content-Type': 'application/json'
     },
-    body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+    body: body
   });
   
   const data = await response.json();
