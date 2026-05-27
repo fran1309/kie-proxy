@@ -1,22 +1,20 @@
 export default async function handler(req, res) {
-  const url = new URL(req.url, 'https://kie-proxy.vercel.app');
-  const path = url.searchParams.get('path') || '/';
-  const targetUrl = 'https://api.kie.ai' + path;
+  const targetUrl = 'https://api.kie.ai/api/v1/jobs/createTask';
   
-  let body = undefined;
-  if (req.method !== 'GET') {
-    body = JSON.stringify(req.body);
-  }
-
   const response = await fetch(targetUrl, {
-    method: req.method,
+    method: 'POST',
     headers: {
       'Authorization': req.headers['authorization'] || '',
       'Content-Type': 'application/json'
     },
-    body: body
+    body: JSON.stringify(req.body)
   });
   
-  const data = await response.json();
-  res.status(response.status).json(data);
+  const text = await response.text();
+  try {
+    const data = JSON.parse(text);
+    res.status(response.status).json(data);
+  } catch(e) {
+    res.status(response.status).send(text);
+  }
 }
