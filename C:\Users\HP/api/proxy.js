@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
-  const targetUrl = 'https://api.kie.ai' + req.url;
+  const url = new URL(req.url, 'https://kie-proxy.vercel.app');
+  const path = url.searchParams.get('path') || '/';
+  const targetUrl = 'https://api.kie.ai' + path;
   
   let body = undefined;
   if (req.method !== 'GET') {
